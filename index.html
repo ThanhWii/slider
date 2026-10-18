@@ -23,11 +23,10 @@
 
         .slider-track {
             display: flex;
-            transition: transform ease 0.3s;
         }
 
         .slider-slide {
-            flex: 0 0 calc(100% / 3);
+            flex: 0 0 auto;
             text-align: center;
             padding: 30px;
         }
@@ -113,9 +112,9 @@
     </div> -->
     <script src="./src/slider.js"></script>
     <script>
-        const mySlide = new Slider('#my-slider', {
+        const mySlider = new Slider('#my-slider', {
             items: 3,
-            loop: true,
+            // loop: true,
             autoPlay: true,
             autoPlayOverPause: true,
         });
