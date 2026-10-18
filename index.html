@@ -4,125 +4,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
-
-        .slider-wrapper {
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .slider-content {
-            position: relative;
-        }
-
-        .slider-track {
-            display: flex;
-        }
-
-        .slider-slide {
-            flex: 0 0 auto;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .slider-slide:nth-child(6n+1) {
-            background: violet;
-        }
-
-        .slider-slide:nth-child(6n+2) {
-            background: orange;
-        }
-
-        .slider-slide:nth-child(6n+3) {
-            background: greenyellow;
-        }
-
-        .slider-slide:nth-child(6n+4) {
-            background: yellow;
-        }
-
-        .slider-slide:nth-child(6n+5) {
-            background: olive;
-        }
-
-        .slider-slide:nth-child(6n+6) {
-            background: blanchedalmond;
-        }
-
-        .slider-prev,
-        .slider-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 10px 20px;
-            border: none;
-            outline: none;
-            background: rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-        }
-
-        .slider-prev {
-            left: 10px;
-        }
-
-        .slider-next {
-            right: 10px;
-        }
-
-        .slider-nav {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .slider-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            border: none;
-            background: #ccc;
-        }
-
-        .slider-dot.active {
-            background: #333;
-        }
-    </style>
+    <title>Slider.js - Lightweight Carousel & Slider Library</title>
+    <!-- Demo & Slider CSS -->
+    <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
-    <div id="my-slider">
-        <div>Slide 1</div>
-        <div>Slide 2</div>
-        <div>Slide 3</div>
-        <div>Slide 4</div>
-        <div>Slide 5</div>
-        <div>Slide 6</div>
-    </div>
-    <div>
-        <button id="prevBtn">Prev</button>
-        <button id="nextBtn">Next</button>
-    </div>
-    <script src="./src/slider.js"></script>
+    <!-- Header Banner -->
+    <header class="header">
+        <a href="https://github.com/ThanhWii/slider" target="_blank" class="github-link" title="View on GitHub">
+            <svg viewBox="0 0 16 16" width="36" height="36" fill="currentColor">
+                <path
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                </path>
+            </svg>
+        </a>
+        <h1 class="header__title">Slider.js</h1>
+        <p class="header__subtitle">A lightweight and customizable slider library built with pure JavaScript.</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="section">
+            <div class="section__heading">
+                <span class="section__number">1</span>
+                <h2 class="section__title">Try It Out</h2>
+            </div>
+
+            <p class="section__desc">
+                Slider.js is a lightweight <strong>carousel/slider library</strong> built with pure JavaScript ES6+.
+                (<a href="https://github.com/ThanhWii/slider" target="_blank">Source code available on GitHub</a>)
+            </p>
+
+            <ul class="feature-list">
+                <li>No dependencies (Pure Vanilla JS)</li>
+                <li>Supports infinite loop with smart DOM cloning</li>
+                <li>Configurable multi-item display & slide-by-page</li>
+                <li>Autoplay support with pause-on-hover</li>
+                <li>Custom navigation buttons & pagination dots</li>
+            </ul>
+
+            <p class="section__desc">Here are some examples of how to use Slider.js:</p>
+
+            <!-- ================= 1. BASIC INFINITE SLIDER ================= -->
+            <div class="demo-block">
+                <h3 class="demo-block__title">1. Basic Infinite Slider (<code>items: 1, loop: true</code>)</h3>
+
+                <div id="slider-basic">
+                    <div class="slide-item">
+                        <div class="slide-box bg-teal">Slide 1</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box bg-blue">Slide 2</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box bg-indigo">Slide 3</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box bg-emerald">Slide 4</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 2. MULTI-ITEM & AUTOPLAY SLIDER ================= -->
+            <div class="demo-block">
+                <h3 class="demo-block__title">2. Multi-Item & Autoplay
+                    (<code>items: 3, loop: true, autoPlay: true</code>)</h3>
+                <p class="demo-block__hint">Automatically slides every 3 seconds. Hover over the slider to pause!</p>
+
+                <div id="slider-multi">
+                    <div class="slide-item">
+                        <div class="slide-card">
+                            <h4>Card 1</h4>
+                            <p>Pure ES6+ Class</p>
+                        </div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-card">
+                            <h4>Card 2</h4>
+                            <p>Zero Dependencies</p>
+                        </div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-card">
+                            <h4>Card 3</h4>
+                            <p>Smooth Transitions</p>
+                        </div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-card">
+                            <h4>Card 4</h4>
+                            <p>Infinite Loop</p>
+                        </div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-card">
+                            <h4>Card 5</h4>
+                            <p>Hover to Pause</p>
+                        </div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-card">
+                            <h4>Card 6</h4>
+                            <p>Custom Controls</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 3. CUSTOM CONTROLS & SLIDE BY PAGE ================= -->
+            <div class="demo-block">
+                <div class="demo-block__header">
+                    <h3 class="demo-block__title">3. Custom External Controls (<code>items: 2, slideBy: "page"</code>)
+                    </h3>
+                    <div class="custom-controls">
+                        <button id="custom-prev" class="demo-btn">&larr; Prev Page</button>
+                        <button id="custom-next" class="demo-btn">Next Page &rarr;</button>
+                    </div>
+                </div>
+
+                <div id="slider-custom">
+                    <div class="slide-item">
+                        <div class="slide-box slide-box--sm bg-slate">Page 1 - Item A</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box slide-box--sm bg-slate">Page 1 - Item B</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box slide-box--sm bg-cyan">Page 2 - Item C</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box slide-box--sm bg-cyan">Page 2 - Item D</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box slide-box--sm bg-teal">Page 3 - Item E</div>
+                    </div>
+                    <div class="slide-item">
+                        <div class="slide-box slide-box--sm bg-teal">Page 3 - Item F</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Embed Slider.js -->
+    <script src="./slider.min.js"></script>
+
+    <!-- Slider Demo -->
     <script>
-        const mySlider = new Slider('#my-slider', {
-            items: 3,
+        // 1. Basic Infinite Slider
+        const basicSlider = new Slider('#slider-basic', {
+            items: 1,
             loop: true,
+            speed: 400
+        });
+
+        // 2. Multi-Item & Autoplay Slider
+        const multiSlider = new Slider('#slider-multi', {
+            items: 3,
             slideBy: 1,
-            // controls: false,
-            // controlsText: ['<--', '-->'],
-            // autoPlay: true,
-            // autoPlayTimeout: 1000,
-            // autoPlayHoverPause: false,
-            // prevBtn: '#prevBtn',
-            // nextBtn: '#nextBtn',
+            loop: true,
+            speed: 350,
+            autoPlay: true,
+            autoPlayTimeout: 3000,
+            autoPlayHoverPause: true
+        });
+
+        // 3. Custom Controls & Slide by Page
+        const customSlider = new Slider('#slider-custom', {
+            items: 2,
+            slideBy: 'page',
+            loop: true,
+            prevBtn: '#custom-prev',
+            nextBtn: '#custom-next'
         });
     </script>
 </body>
