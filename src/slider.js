@@ -1,10 +1,12 @@
 class Slider {
     // Slider private properties
     #container;
+    #content;
     #track;
     #slides;
     #prevBtn;
     #nextBtn;
+    #navWrapper;
     #currentIndex;
     #offset;
     #opt;
@@ -20,6 +22,7 @@ class Slider {
             items: 1,
             loop: false,
             speed: 300,
+            nav: true,
             ...options
         }
         this.#slides = Array.from(this.#container.children);
@@ -31,8 +34,18 @@ class Slider {
     // Private methods
     #init() {
         this.#container.classList.add('slider-wrapper');
+        this.#createContent();
         this.#createTrack();
-        this.#createNavigation();
+        this.#createControls();
+        if (this.#opt.nav) {
+            this.#createNav();
+        }
+    }
+
+    #createContent() {
+        this.#content = document.createElement('div');
+        this.#content.className = 'slider-content';
+        this.#container.appendChild(this.#content);
     }
 
     #createTrack() {
@@ -48,25 +61,58 @@ class Slider {
             slide.style.flexBasis = `calc(100% / ${this.#opt.items})`;
             this.#track.appendChild(slide);
         });
-        this.#container.appendChild(this.#track);
+        this.#content.append(this.#track);
     }
 
-    #createNavigation() {
+    #createControls() {
         this.#prevBtn = document.createElement('button');
         this.#nextBtn = document.createElement('button');
         this.#prevBtn.textContent = '<';
         this.#nextBtn.textContent = '>';
         this.#prevBtn.className = 'slider-prev';
         this.#nextBtn.className = 'slider-next';
-        this.#container.append(this.#prevBtn, this.#nextBtn);
+        this.#content.append(this.#prevBtn, this.#nextBtn);
         this.#prevBtn.onclick = () => this.moveSlide(-1);
         this.#nextBtn.onclick = () => this.moveSlide(1);
+    }
+
+    #createNav() {
+        this.#navWrapper = document.createElement('div');
+        this.#navWrapper.className = 'slider-nav';
+        const slideCount = this.#opt.loop ? (this.#slides.length - this.#opt.items * 2) : this.#slides.length;
+        const pageCount = Math.ceil(slideCount / this.#opt.items);
+        for (let i = 0; i < pageCount; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'slider-dot';
+            if (i === 0) {
+                dot.classList.add('active');
+            }
+            dot.onclick = () => {
+                this.#currentIndex = this.#opt.loop ? i * this.#opt.items + this.#opt.items : i * this.#opt.items;
+                this.#updatePosition();
+            }
+            this.#navWrapper.appendChild(dot);
+        }
+        this.#container.appendChild(this.#navWrapper);
     }
 
     #updatePosition(instant = false) {
         this.#track.style.transition = instant ? 'none' : `transform ease ${this.#opt.speed}ms`;
         this.#offset = -(this.#currentIndex * (100 / this.#opt.items));
         this.#track.style.transform = `translateX(${this.#offset}%)`;
+        if (this.#opt.nav && !instant) {
+            this.#updateNav();
+        }
+    }
+
+    #updateNav() {
+        const slideCount = this.#opt.loop ? (this.#slides.length - this.#opt.items * 2) : this.#slides.length;
+        const realIndex = this.#opt.loop ? (this.#currentIndex - this.#opt.items + slideCount) % slideCount : this.#currentIndex;
+        const pageIndex = Math.floor(realIndex / this.#opt.items);
+        const dots = Array.from(this.#navWrapper.children);
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === pageIndex);
+        })
     }
 
     // API
@@ -79,11 +125,12 @@ class Slider {
             this.#track.ontransitionend = () => {
                 if (this.#currentIndex <= 0) {
                     this.#currentIndex = maxIndex - this.#opt.items;
+                    this.#updatePosition(true);
                 }
                 else if (this.#currentIndex >= maxIndex) {
                     this.#currentIndex = this.#opt.items;
+                    this.#updatePosition(true);
                 }
-                this.#updatePosition(true);
                 this.#isAnimating = false;
             }
         }
