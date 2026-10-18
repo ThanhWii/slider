@@ -4,6 +4,7 @@ class Slider {
     #content;
     #track;
     #slides;
+    #originalSlides;
     #prevBtn;
     #nextBtn;
     #navWrapper;
@@ -11,7 +12,7 @@ class Slider {
     #offset;
     #opt;
     #isAnimating;
-    #timeIntervalId;
+    #autoPlayTimer;
 
     constructor(selector, options = {}) {
         this.#container = document.querySelector(selector);
@@ -30,23 +31,24 @@ class Slider {
             nextBtn: null,
             slideBy: 1, // "page"
             autoPlay: false,
-            autoPlayTime: 5000,
+            autoPlayTimeout: 5000,
             autoPlayHoverPause: true,
             ...options
         }
-        this.#slides = Array.from(this.#container.children);
-        this.#currentIndex = this.#opt.loop ? this.#opt.items : 0;
+        this.#originalSlides = Array.from(this.#container.children)
+        this.#slides = [...this.#originalSlides];
+        this.#currentIndex = this.#opt.loop ? this.#getCloneCount() : 0;
         this.#init();
         this.#updatePosition();
         if (this.#opt.autoPlay) {
-            this.#autoPlayEnable();
-        }
-        if (this.#opt.autoPlayHoverPause) {
-            this.#content.onmouseenter = () => {
-                clearInterval(this.#timeIntervalId);
-            }
-            this.#content.onmouseleave = () => {
-                this.#autoPlayEnable();
+            this.#startAutoPlay();
+            if (this.#opt.autoPlayHoverPause) {
+                this.#container.onmouseenter = () => {
+                    this.#stopAutoPlay();
+                }
+                this.#container.onmouseleave = () => {
+                    this.#startAutoPlay();
+                }
             }
         }
     }
@@ -56,10 +58,11 @@ class Slider {
         this.#container.classList.add('slider-wrapper');
         this.#createContent();
         this.#createTrack();
-        if (this.#opt.controls) {
+        const showNav = this.#getSlideCount() > this.#opt.items;
+        if (this.#opt.controls && showNav) {
             this.#createControls();
         }
-        if (this.#opt.nav) {
+        if (this.#opt.nav && showNav) {
             this.#createNav();
         }
     }
@@ -73,9 +76,10 @@ class Slider {
     #createTrack() {
         this.#track = document.createElement('div');
         this.#track.className = 'slider-track';
-        if (this.#opt.loop) {
-            const cloneHead = this.#slides.slice(-this.#opt.items).map(node => node.cloneNode(true));
-            const cloneTail = this.#slides.slice(0, this.#opt.items).map(node => node.cloneNode(true));
+        const cloneCount = this.#getCloneCount();
+        if (this.#opt.loop && cloneCount > 0) {
+            const cloneHead = this.#slides.slice(-cloneCount).map(node => node.cloneNode(true));
+            const cloneTail = this.#slides.slice(0, cloneCount).map(node => node.cloneNode(true));
             this.#slides = [...cloneHead, ...this.#slides, ...cloneTail];
         }
         this.#slides.forEach(slide => {
@@ -103,7 +107,7 @@ class Slider {
             this.#nextBtn.textContent = this.#opt.controlsText[1];
             this.#nextBtn.className = 'slider-next';
         }
-        const stepSize = this.#opt.slideBy === "page" ? this.#opt.items : this.#opt.slideBy;
+        const stepSize = this.#getSlideBy();
         this.#content.append(this.#prevBtn, this.#nextBtn);
         this.#prevBtn.onclick = () => this.moveSlide(-stepSize);
         this.#nextBtn.onclick = () => this.moveSlide(stepSize);
@@ -121,7 +125,7 @@ class Slider {
                 dot.classList.add('active');
             }
             dot.onclick = () => {
-                this.#currentIndex = this.#opt.loop ? i * this.#opt.items + this.#opt.items : i * this.#opt.items;
+                this.#currentIndex = this.#opt.loop ? i * this.#opt.items + this.#getCloneCount() : i * this.#opt.items;
                 this.#updatePosition();
             }
             this.#navWrapper.appendChild(dot);
@@ -139,8 +143,9 @@ class Slider {
     }
 
     #updateNav() {
+        if (!this.#navWrapper) return;
         const slideCount = this.#getSlideCount();
-        const realIndex = this.#opt.loop ? (this.#currentIndex - this.#opt.items + slideCount) % slideCount : this.#currentIndex;
+        const realIndex = this.#opt.loop ? (this.#currentIndex - this.#getCloneCount() + slideCount) % slideCount : this.#currentIndex;
         const pageIndex = Math.floor(realIndex / this.#opt.items);
         const dots = Array.from(this.#navWrapper.children);
         dots.forEach((dot, index) => {
@@ -148,14 +153,33 @@ class Slider {
         })
     }
 
-    #getSlideCount() {
-        return this.#opt.loop ? (this.#slides.length - this.#opt.items * 2) : this.#slides.length;
+    #getSlideBy() {
+        return this.#opt.slideBy === "page" ? this.#opt.items : this.#opt.slideBy;
     }
 
-    #autoPlayEnable() {
-        this.#timeIntervalId = setInterval(() => {
-            this.moveSlide(1);
-        }, this.#opt.autoPlayTime);
+    #getSlideCount() {
+        return this.#originalSlides.length;
+    }
+
+    #getCloneCount() {
+        const slideBy = this.#getSlideBy();
+        const slideCount = this.#getSlideCount();
+        if (slideCount <= this.#opt.items) return 0;
+        const cloneCount = slideBy + this.#opt.items;
+        return cloneCount > slideCount ? slideCount : cloneCount;
+    }
+
+    #startAutoPlay() {
+        if (this.#autoPlayTimer) return;
+        const slideBy = this.#getSlideBy();
+        this.#autoPlayTimer = setInterval(() => {
+            this.moveSlide(slideBy);
+        }, this.#opt.autoPlayTimeout);
+    }
+
+    #stopAutoPlay() {
+        clearInterval(this.#autoPlayTimer);
+        this.#autoPlayTimer = null;
     }
 
     // API
@@ -167,7 +191,7 @@ class Slider {
         if (this.#opt.loop) {
             this.#track.ontransitionend = () => {
                 const slideCount = this.#getSlideCount();
-                if (this.#currentIndex < this.#opt.items) {
+                if (this.#currentIndex < this.#getCloneCount()) {
                     this.#currentIndex += slideCount;
                     this.#updatePosition(true);
                 }
