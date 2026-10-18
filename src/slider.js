@@ -11,6 +11,7 @@ class Slider {
     #offset;
     #opt;
     #isAnimating;
+    #timeIntervalId;
 
     constructor(selector, options = {}) {
         this.#container = document.querySelector(selector);
@@ -28,12 +29,26 @@ class Slider {
             prevBtn: null,
             nextBtn: null,
             slideBy: 1, // "page"
+            autoPlay: false,
+            autoPlayTime: 5000,
+            autoPlayHoverPause: true,
             ...options
         }
         this.#slides = Array.from(this.#container.children);
         this.#currentIndex = this.#opt.loop ? this.#opt.items : 0;
         this.#init();
         this.#updatePosition();
+        if (this.#opt.autoPlay) {
+            this.#autoPlayEnable();
+        }
+        if (this.#opt.autoPlayHoverPause) {
+            this.#content.onmouseenter = () => {
+                clearInterval(this.#timeIntervalId);
+            }
+            this.#content.onmouseleave = () => {
+                this.#autoPlayEnable();
+            }
+        }
     }
 
     // Private methods
@@ -97,7 +112,7 @@ class Slider {
     #createNav() {
         this.#navWrapper = document.createElement('div');
         this.#navWrapper.className = 'slider-nav';
-        const slideCount = this.#opt.loop ? (this.#slides.length - this.#opt.items * 2) : this.#slides.length;
+        const slideCount = this.#getSlideCount();
         const pageCount = Math.ceil(slideCount / this.#opt.items);
         for (let i = 0; i < pageCount; i++) {
             const dot = document.createElement('button');
@@ -124,13 +139,23 @@ class Slider {
     }
 
     #updateNav() {
-        const slideCount = this.#opt.loop ? (this.#slides.length - this.#opt.items * 2) : this.#slides.length;
+        const slideCount = this.#getSlideCount();
         const realIndex = this.#opt.loop ? (this.#currentIndex - this.#opt.items + slideCount) % slideCount : this.#currentIndex;
         const pageIndex = Math.floor(realIndex / this.#opt.items);
         const dots = Array.from(this.#navWrapper.children);
         dots.forEach((dot, index) => {
             dot.classList.toggle('active', index === pageIndex);
         })
+    }
+
+    #getSlideCount() {
+        return this.#opt.loop ? (this.#slides.length - this.#opt.items * 2) : this.#slides.length;
+    }
+
+    #autoPlayEnable() {
+        this.#timeIntervalId = setInterval(() => {
+            this.moveSlide(1);
+        }, this.#opt.autoPlayTime);
     }
 
     // API
@@ -141,12 +166,13 @@ class Slider {
         this.#currentIndex = Math.min(Math.max(this.#currentIndex + step, 0), maxIndex);
         if (this.#opt.loop) {
             this.#track.ontransitionend = () => {
-                if (this.#currentIndex <= 0) {
-                    this.#currentIndex = maxIndex - this.#opt.items;
+                const slideCount = this.#getSlideCount();
+                if (this.#currentIndex < this.#opt.items) {
+                    this.#currentIndex += slideCount;
                     this.#updatePosition(true);
                 }
-                else if (this.#currentIndex >= maxIndex) {
-                    this.#currentIndex = this.#opt.items;
+                else if (this.#currentIndex > slideCount) {
+                    this.#currentIndex -= slideCount;
                     this.#updatePosition(true);
                 }
                 this.#isAnimating = false;
