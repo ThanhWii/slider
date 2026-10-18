@@ -1,0 +1,210 @@
+class Slider {
+    // Slider private properties
+    #container;
+    #content;
+    #track;
+    #slides;
+    #originalSlides;
+    #prevBtn;
+    #nextBtn;
+    #navWrapper;
+    #currentIndex;
+    #offset;
+    #opt;
+    #isAnimating;
+    #autoPlayTimer;
+
+    constructor(selector, options = {}) {
+        this.#container = document.querySelector(selector);
+        if (!this.#container) {
+            console.error(`Slider: Container "${selector}" not found.`);
+            return;
+        }
+        this.#opt = {
+            items: 1,
+            loop: false,
+            speed: 300,
+            nav: true,
+            controls: true,
+            controlsText: ['<', '>'],
+            prevBtn: null,
+            nextBtn: null,
+            slideBy: 1, // "page"
+            autoPlay: false,
+            autoPlayTimeout: 5000,
+            autoPlayHoverPause: true,
+            ...options
+        }
+        this.#originalSlides = Array.from(this.#container.children)
+        this.#slides = [...this.#originalSlides];
+        this.#currentIndex = this.#opt.loop ? this.#getCloneCount() : 0;
+        this.#init();
+        this.#updatePosition();
+        if (this.#opt.autoPlay) {
+            this.#startAutoPlay();
+            if (this.#opt.autoPlayHoverPause) {
+                this.#container.onmouseenter = () => {
+                    this.#stopAutoPlay();
+                }
+                this.#container.onmouseleave = () => {
+                    this.#startAutoPlay();
+                }
+            }
+        }
+    }
+
+    // Private methods
+    #init() {
+        this.#container.classList.add('slider-wrapper');
+        this.#createContent();
+        this.#createTrack();
+        const showNav = this.#getSlideCount() > this.#opt.items;
+        if (this.#opt.controls && showNav) {
+            this.#createControls();
+        }
+        if (this.#opt.nav && showNav) {
+            this.#createNav();
+        }
+    }
+
+    #createContent() {
+        this.#content = document.createElement('div');
+        this.#content.className = 'slider-content';
+        this.#container.appendChild(this.#content);
+    }
+
+    #createTrack() {
+        this.#track = document.createElement('div');
+        this.#track.className = 'slider-track';
+        const cloneCount = this.#getCloneCount();
+        if (this.#opt.loop && cloneCount > 0) {
+            const cloneHead = this.#slides.slice(-cloneCount).map(node => node.cloneNode(true));
+            const cloneTail = this.#slides.slice(0, cloneCount).map(node => node.cloneNode(true));
+            this.#slides = [...cloneHead, ...this.#slides, ...cloneTail];
+        }
+        this.#slides.forEach(slide => {
+            slide.classList.add('slider-slide');
+            slide.style.flexBasis = `calc(100% / ${this.#opt.items})`;
+            this.#track.appendChild(slide);
+        });
+        this.#content.append(this.#track);
+    }
+
+    #createControls() {
+        if (this.#opt.prevBtn) {
+            this.#prevBtn = document.querySelector(this.#opt.prevBtn);
+        }
+        else {
+            this.#prevBtn = document.createElement('button');
+            this.#prevBtn.textContent = this.#opt.controlsText[0];
+            this.#prevBtn.className = 'slider-prev';
+            this.#content.appendChild(this.#prevBtn);
+        }
+        if (this.#opt.nextBtn) {
+            this.#nextBtn = document.querySelector(this.#opt.nextBtn);
+        }
+        else {
+            this.#nextBtn = document.createElement('button');
+            this.#nextBtn.textContent = this.#opt.controlsText[1];
+            this.#nextBtn.className = 'slider-next';
+            this.#content.appendChild(this.#nextBtn);
+        }
+        const stepSize = this.#getSlideBy();
+        this.#prevBtn.onclick = () => this.moveSlide(-stepSize);
+        this.#nextBtn.onclick = () => this.moveSlide(stepSize);
+    }
+
+    #createNav() {
+        this.#navWrapper = document.createElement('div');
+        this.#navWrapper.className = 'slider-nav';
+        const slideCount = this.#getSlideCount();
+        const pageCount = Math.ceil(slideCount / this.#opt.items);
+        for (let i = 0; i < pageCount; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'slider-dot';
+            if (i === 0) {
+                dot.classList.add('active');
+            }
+            dot.onclick = () => {
+                this.#currentIndex = this.#opt.loop ? i * this.#opt.items + this.#getCloneCount() : i * this.#opt.items;
+                this.#updatePosition();
+            }
+            this.#navWrapper.appendChild(dot);
+        }
+        this.#container.appendChild(this.#navWrapper);
+    }
+
+    #updatePosition(instant = false) {
+        this.#track.style.transition = instant ? 'none' : `transform ease ${this.#opt.speed}ms`;
+        this.#offset = -(this.#currentIndex * (100 / this.#opt.items));
+        this.#track.style.transform = `translateX(${this.#offset}%)`;
+        if (this.#opt.nav && !instant) {
+            this.#updateNav();
+        }
+    }
+
+    #updateNav() {
+        if (!this.#navWrapper) return;
+        const slideCount = this.#getSlideCount();
+        const realIndex = this.#opt.loop ? (this.#currentIndex - this.#getCloneCount() + slideCount) % slideCount : this.#currentIndex;
+        const pageIndex = Math.floor(realIndex / this.#opt.items);
+        const dots = Array.from(this.#navWrapper.children);
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === pageIndex);
+        })
+    }
+
+    #getSlideBy() {
+        return this.#opt.slideBy === "page" ? this.#opt.items : this.#opt.slideBy;
+    }
+
+    #getSlideCount() {
+        return this.#originalSlides.length;
+    }
+
+    #getCloneCount() {
+        const slideBy = this.#getSlideBy();
+        const slideCount = this.#getSlideCount();
+        if (slideCount <= this.#opt.items) return 0;
+        const cloneCount = slideBy + this.#opt.items;
+        return cloneCount > slideCount ? slideCount : cloneCount;
+    }
+
+    #startAutoPlay() {
+        if (this.#autoPlayTimer) return;
+        const slideBy = this.#getSlideBy();
+        this.#autoPlayTimer = setInterval(() => {
+            this.moveSlide(slideBy);
+        }, this.#opt.autoPlayTimeout);
+    }
+
+    #stopAutoPlay() {
+        clearInterval(this.#autoPlayTimer);
+        this.#autoPlayTimer = null;
+    }
+
+    // API
+    moveSlide(step) {
+        if (this.#opt.loop && this.#isAnimating) return;
+        this.#isAnimating = true;
+        const maxIndex = this.#slides.length - this.#opt.items;
+        this.#currentIndex = Math.min(Math.max(this.#currentIndex + step, 0), maxIndex);
+        if (this.#opt.loop) {
+            this.#track.ontransitionend = (e) => {
+                if (e.target !== this.#track || e.propertyName !== 'transform') return;
+                this.#track.ontransitionend = null;
+                const slideCount = this.#getSlideCount();
+                if (this.#currentIndex < this.#getCloneCount()) {
+                    this.#currentIndex += slideCount;
+                    this.#updatePosition(true);
+                }
+                else if (this.#currentIndex > slideCount) {
+                    this.#currentIndex -= slideCount;
+                    this.#updatePosition(true);
+                }
+                this.#isAnimating = false;
+            }
+        }
+        this.#updatePosition();
+    }
+}
