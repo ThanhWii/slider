@@ -6,6 +6,7 @@ class Slider {
     #prevBtn;
     #nextBtn;
     #currentIndex;
+    #offset;
     #opt;
 
     constructor(selector, options = {}) {
@@ -47,13 +48,14 @@ class Slider {
         this.#prevBtn.className = 'slider-prev';
         this.#nextBtn.className = 'slider-next';
         this.#container.append(this.#prevBtn, this.#nextBtn);
-        this.#prevBtn.onclick = () => this.#moveSlide(-1);
-        this.#nextBtn.onclick = () => this.#moveSlide(1);
+        this.#prevBtn.onclick = () => this.moveSlide(-1);
+        this.#nextBtn.onclick = () => this.moveSlide(1);
     }
 
     // API
-    #moveSlide(step) {
+    moveSlide(step) {
         this.#currentIndex = Math.min(Math.max(this.#currentIndex + step, 0), this.#slides.length - 3);
-        console.log(this.#currentIndex);
+        this.#offset = -(this.#currentIndex * (100 / 3));
+        this.#track.style.transform = `translateX(${this.#offset}%)`;
     }
 }
