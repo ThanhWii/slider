@@ -12,51 +12,51 @@
             box-sizing: border-box;
         }
 
-        .slide-wrapper {
+        .slider-wrapper {
             width: 100%;
             overflow: hidden;
         }
 
-        .slide-content {
+        .slider-content {
             position: relative;
         }
 
-        .slide-track {
+        .slider-track {
             display: flex;
         }
 
-        .slide-slide {
-            flex: 0 0 auto;
+        .slider-slide {
+            flex: 0 0 calc(100% / 3);
             text-align: center;
             padding: 30px;
         }
 
-        .slide-slide:nth-child(6n+1) {
+        .slider-slide:nth-child(6n+1) {
             background: violet;
         }
 
-        .slide-slide:nth-child(6n+2) {
+        .slider-slide:nth-child(6n+2) {
             background: orange;
         }
 
-        .slide-slide:nth-child(6n+3) {
+        .slider-slide:nth-child(6n+3) {
             background: greenyellow;
         }
 
-        .slide-slide:nth-child(6n+4) {
+        .slider-slide:nth-child(6n+4) {
             background: yellow;
         }
 
-        .slide-slide:nth-child(6n+5) {
+        .slider-slide:nth-child(6n+5) {
             background: olive;
         }
 
-        .slide-slide:nth-child(6n+6) {
+        .slider-slide:nth-child(6n+6) {
             background: blanchedalmond;
         }
 
-        .slide-prev,
-        .slide-next {
+        .slider-prev,
+        .slider-next {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -67,15 +67,15 @@
             cursor: pointer;
         }
 
-        .slide-prev {
+        .slider-prev {
             left: 10px;
         }
 
-        .slide-next {
+        .slider-next {
             right: 10px;
         }
 
-        .slide-nav {
+        .slider-nav {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -83,7 +83,7 @@
             margin-top: 8px;
         }
 
-        .slide-dot {
+        .slider-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
@@ -91,7 +91,7 @@
             background: #ccc;
         }
 
-        .slide-dot.active {
+        .slider-dot.active {
             background: #333;
         }
     </style>
@@ -106,13 +106,13 @@
         <div>Slide 5</div>
         <div>Slide 6</div>
     </div>
-    <div>
+    <!-- <div>
         <button id="prevBtn">Prev</button>
         <button id="nextBtn">Next</button>
-    </div>
-    <script src="main.js"></script>
+    </div> -->
+    <script src="./src/slider.js"></script>
     <script>
-        const mySlide = new Slide('#my-slider', {
+        const mySlide = new Slider('#my-slider', {
             items: 1,
             loop: true,
             autoPlay: true,
