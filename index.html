@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .slider-wrapper {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .slider-content {
+            position: relative;
+        }
+
+        .slider-track {
+            display: flex;
+        }
+
+        .slider-slide {
+            flex: 0 0 calc(100% / 3);
+            text-align: center;
+            padding: 30px;
+        }
+
+        .slider-slide:nth-child(6n+1) {
+            background: violet;
+        }
+
+        .slider-slide:nth-child(6n+2) {
+            background: orange;
+        }
+
+        .slider-slide:nth-child(6n+3) {
+            background: greenyellow;
+        }
+
+        .slider-slide:nth-child(6n+4) {
+            background: yellow;
+        }
+
+        .slider-slide:nth-child(6n+5) {
+            background: olive;
+        }
+
+        .slider-slide:nth-child(6n+6) {
+            background: blanchedalmond;
+        }
+
+        .slider-prev,
+        .slider-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .slider-prev {
+            left: 10px;
+        }
+
+        .slider-next {
+            right: 10px;
+        }
+
+        .slider-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: none;
+            background: #ccc;
+        }
+
+        .slider-dot.active {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="my-slider">
+        <div>Slide 1</div>
+        <div>Slide 2</div>
+        <div>Slide 3</div>
+        <div>Slide 4</div>
+        <div>Slide 5</div>
+        <div>Slide 6</div>
+    </div>
+    <!-- <div>
+        <button id="prevBtn">Prev</button>
+        <button id="nextBtn">Next</button>
+    </div> -->
+    <script src="./src/slider.js"></script>
+    <script>
+        const mySlide = new Slider('#my-slider', {
+            items: 1,
+            loop: true,
+            autoPlay: true,
+            autoPlayOverPause: true,
+        });
+    </script>
+</body>
+
+</html>
