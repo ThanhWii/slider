@@ -106,17 +106,23 @@
         <div>Slide 5</div>
         <div>Slide 6</div>
     </div>
-    <!-- <div>
+    <div>
         <button id="prevBtn">Prev</button>
         <button id="nextBtn">Next</button>
-    </div> -->
+    </div>
     <script src="./src/slider.js"></script>
     <script>
         const mySlider = new Slider('#my-slider', {
             items: 3,
             loop: true,
-            autoPlay: true,
-            autoPlayOverPause: true,
+            slideBy: 1,
+            // controls: false,
+            // controlsText: ['<--', '-->'],
+            // autoPlay: true,
+            // autoPlayTimeout: 1000,
+            // autoPlayHoverPause: false,
+            // prevBtn: '#prevBtn',
+            // nextBtn: '#nextBtn',
         });
     </script>
 </body>
