@@ -23,6 +23,11 @@ class Slider {
             loop: false,
             speed: 300,
             nav: true,
+            controls: true,
+            controlsText: ['<', '>'],
+            prevBtn: null,
+            nextBtn: null,
+            slideBy: 1, // "page"
             ...options
         }
         this.#slides = Array.from(this.#container.children);
@@ -36,7 +41,9 @@ class Slider {
         this.#container.classList.add('slider-wrapper');
         this.#createContent();
         this.#createTrack();
-        this.#createControls();
+        if (this.#opt.controls) {
+            this.#createControls();
+        }
         if (this.#opt.nav) {
             this.#createNav();
         }
@@ -65,15 +72,26 @@ class Slider {
     }
 
     #createControls() {
-        this.#prevBtn = document.createElement('button');
-        this.#nextBtn = document.createElement('button');
-        this.#prevBtn.textContent = '<';
-        this.#nextBtn.textContent = '>';
-        this.#prevBtn.className = 'slider-prev';
-        this.#nextBtn.className = 'slider-next';
+        if (this.#opt.prevBtn) {
+            this.#prevBtn = document.querySelector(this.#opt.prevBtn);
+        }
+        else {
+            this.#prevBtn = document.createElement('button');
+            this.#prevBtn.textContent = this.#opt.controlsText[0];
+            this.#prevBtn.className = 'slider-prev';
+        }
+        if (this.#opt.nextBtn) {
+            this.#nextBtn = document.querySelector(this.#opt.nextBtn);
+        }
+        else {
+            this.#nextBtn = document.createElement('button');
+            this.#nextBtn.textContent = this.#opt.controlsText[1];
+            this.#nextBtn.className = 'slider-next';
+        }
+        const stepSize = this.#opt.slideBy === "page" ? this.#opt.items : this.#opt.slideBy;
         this.#content.append(this.#prevBtn, this.#nextBtn);
-        this.#prevBtn.onclick = () => this.moveSlide(-1);
-        this.#nextBtn.onclick = () => this.moveSlide(1);
+        this.#prevBtn.onclick = () => this.moveSlide(-stepSize);
+        this.#nextBtn.onclick = () => this.moveSlide(stepSize);
     }
 
     #createNav() {
