@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .slide-wrapper {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            position: relative;
+        }
+
+        .slide-track {
+            display: flex;
+        }
+
+        .slide-slide {
+            flex: 0 0 auto;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .slide-slide:nth-child(6n+1) {
+            background: violet;
+        }
+
+        .slide-slide:nth-child(6n+2) {
+            background: orange;
+        }
+
+        .slide-slide:nth-child(6n+3) {
+            background: greenyellow;
+        }
+
+        .slide-slide:nth-child(6n+4) {
+            background: yellow;
+        }
+
+        .slide-slide:nth-child(6n+5) {
+            background: olive;
+        }
+
+        .slide-slide:nth-child(6n+6) {
+            background: blanchedalmond;
+        }
+
+        .slide-prev,
+        .slide-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .slide-prev {
+            left: 10px;
+        }
+
+        .slide-next {
+            right: 10px;
+        }
+
+        .slide-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .slide-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: none;
+            background: #ccc;
+        }
+
+        .slide-dot.active {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="my-slider">
+        <div>Slide 1</div>
+        <div>Slide 2</div>
+        <div>Slide 3</div>
+        <div>Slide 4</div>
+        <div>Slide 5</div>
+        <div>Slide 6</div>
+    </div>
+    <div>
+        <button id="prevBtn">Prev</button>
+        <button id="nextBtn">Next</button>
+    </div>
+    <script src="main.js"></script>
+    <script>
+        const mySlide = new Slide('#my-slider', {
+            items: 1,
+            loop: true,
+            autoPlay: true,
+            autoPlayOverPause: true,
+        });
+    </script>
+</body>
+
+</html>
