@@ -98,6 +98,7 @@ class Slider {
             this.#prevBtn = document.createElement('button');
             this.#prevBtn.textContent = this.#opt.controlsText[0];
             this.#prevBtn.className = 'slider-prev';
+            this.#content.appendChild(this.#prevBtn);
         }
         if (this.#opt.nextBtn) {
             this.#nextBtn = document.querySelector(this.#opt.nextBtn);
@@ -106,9 +107,9 @@ class Slider {
             this.#nextBtn = document.createElement('button');
             this.#nextBtn.textContent = this.#opt.controlsText[1];
             this.#nextBtn.className = 'slider-next';
+            this.#content.appendChild(this.#nextBtn);
         }
         const stepSize = this.#getSlideBy();
-        this.#content.append(this.#prevBtn, this.#nextBtn);
         this.#prevBtn.onclick = () => this.moveSlide(-stepSize);
         this.#nextBtn.onclick = () => this.moveSlide(stepSize);
     }
@@ -189,7 +190,9 @@ class Slider {
         const maxIndex = this.#slides.length - this.#opt.items;
         this.#currentIndex = Math.min(Math.max(this.#currentIndex + step, 0), maxIndex);
         if (this.#opt.loop) {
-            this.#track.ontransitionend = () => {
+            this.#track.ontransitionend = (e) => {
+                if (e.target !== this.#track || e.propertyName !== 'transform') return;
+                this.#track.ontransitionend = null;
                 const slideCount = this.#getSlideCount();
                 if (this.#currentIndex < this.#getCloneCount()) {
                     this.#currentIndex += slideCount;
